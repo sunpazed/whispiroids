@@ -169,9 +169,6 @@ Game.prototype = {
     this.center = center;
     this.points = genWhispir(this.center,this.angle,this.size);
 
-	// velocity of the enemy is random
-    this.velocity = { x: Math.random() - 0.5, y: Math.random() - 0.5 };
-
     // minimum size is 80
     this.minSize = 80;
 
@@ -180,6 +177,10 @@ Game.prototype = {
 	} else {
 		this.size = this.minSize + (80 * Math.random());
 	}
+
+	// velocity of the enemy is random, with smaller enemies being faster
+	this.maxVelocity = this.minSize / this.size;
+    this.velocity = { x: (Math.random()*this.maxVelocity) - (this.maxVelocity/2), y: (Math.random()*this.maxVelocity) - (this.maxVelocity/2) };
 
   };
 
