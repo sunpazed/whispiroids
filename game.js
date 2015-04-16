@@ -29,9 +29,13 @@ var Game = function(canvasId) {
 
 	var gameSize = this.size;
 
+	// total quantity of enemies on the screen
+	this.enemyTotal = 800;
+
 	// define sprites / game actors
+    //(game, center, size)
     this.sprites = [
-      new Enemy(this, { x: this.size.x*Math.random(), y: this.size.y*Math.random() },100),
+      new Enemy(this, { x: this.size.x*Math.random(), y: this.size.y*Math.random() }),
       new Enemy(this, { x: this.size.x*Math.random(), y: this.size.y*Math.random() }),
       new Enemy(this, { x: this.size.x*Math.random(), y: this.size.y*Math.random() }),
       new Enemy(this, { x: this.size.x*Math.random(), y: this.size.y*Math.random() }),
@@ -42,7 +46,6 @@ var Game = function(canvasId) {
       new Player(this)
     ];
 
-    //(game, center, angle, velocity)
 
 	// tick is one iteration of the game run every 60fps
 	var tick = function() {
@@ -105,16 +108,24 @@ Game.prototype = {
 
 			}
 
-			// if the enemy sizes < 800, then spawn another enemy
-			if (sizes < 800) {
+			// if the enemy sizes < game.enemyTotals, then spawn another enemy
+			if (sizes < this.enemyTotal) {
+
+				// randomly spawn one of four screen edges				
 				var spawnpos;
-				// randomly spawn one of four screen edges
+
 				if (Math.random() < 0.5) {
 					spawnPosition = { x: (Math.random() > 0.5 ? this.size.x+100 : -100), y: (this.size.y * Math.random()) }
 				} else {
 					spawnPosition = { y: (Math.random() > 0.5 ? this.size.y+100 : -100), x: (this.size.x * Math.random()) }
 				}
+
+				// add a new sprite into the game  
 				this.addSprite(new Enemy(this, spawnPosition));
+
+				// increase total enemies on the screen
+				this.enemyTotal = this.enemyTotal + 50;
+
 			}
 
 		}
@@ -506,11 +517,13 @@ var geometry = {
 
 	// check intersection of line(p1,p2) and line(p3,p4)
 	// via http://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
-    isIntersecting: function(p1, p2, p3, p4) {
-		function CCW(p1, p2, p3) {
+
+	CCW: function(p1, p2, p3) {
 			return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
-		}
-		return (CCW(p1, p3, p4) != CCW(p2, p3, p4)) && (CCW(p1, p2, p3) != CCW(p1, p2, p4));
+	},
+
+    isIntersecting: function(p1, p2, p3, p4) {
+		return (this.CCW(p1, p3, p4) != this.CCW(p2, p3, p4)) && (this.CCW(p1, p2, p3) != this.CCW(p1, p2, p4));
 	}
 }
 
